@@ -118,3 +118,32 @@ def test_unique_question_ids():
     question2 = Question(title='q2')
     
     assert question1.id != question2.id
+
+
+@pytest.fixture
+def question_with_choices():
+    question = Question(title="What is Python?", max_selections=3)
+    question.add_choice('A programming language', True)
+    question.add_choice('A type of snake', False)
+    question.add_choice('A framework', False)
+    question.add_choice('A programming tool', True)
+    
+    return question
+
+def test_remove_choice_by_id(question_with_choices):
+    question = question_with_choices
+    choice_to_remove = question.choices[1] 
+
+    question.remove_choice_by_id(choice_to_remove.id)
+    
+    assert len(question.choices) == 3
+    assert choice_to_remove not in question.choices
+
+def test_select_multiple_correct_choices(question_with_choices):
+    question = question_with_choices
+    choice_1 = question.choices[0]
+    choice_2 = question.choices[3]
+    
+    selected_choices = question.select_choices([choice_1.id, choice_2.id])
+    
+    assert selected_choices == [choice_1.id, choice_2.id]
